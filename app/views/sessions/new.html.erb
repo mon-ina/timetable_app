@@ -1,2 +1,25 @@
-<h1>Sessions#new</h1>
-<p>Find me in app/views/sessions/new.html.erb</p>
+<h2>ログイン</h2>
+
+<% if flash[:alert] %>
+  <p style="color:red;"><%= flash[:alert] %></p>
+<% end %>
+
+<%= form_with url: login_path, local: true do |f| %>
+  <div>
+    <%= f.label :account_name, "アカウント名" %><br>
+    <%= f.text_field :account_name %>
+  </div>
+
+  <div>
+    <%= f.label :password, "パスワード" %><br>
+    <%= f.password_field :password %>
+  </div>
+
+  <div>
+    <%= f.submit "ログイン" %>
+  </div>
+<% end %>
+
+<hr>
+
+<%= button_to "生徒としてログイン", guest_login_path, method: :post %>
