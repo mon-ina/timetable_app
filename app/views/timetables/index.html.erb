@@ -1,9 +1,15 @@
 <h2><%= "#{@grade}年の時間割（#{@week_start.strftime('%-m月%-d日')}週）" %></h2>
 
+<%
+=begin%>
+ @week_offset をコントローラーから渡して、リンクの進行方向を制限
+disabled オプションを付けるとクリック不可になります 
+<%
+=end%>
 <div class="controls">
-  <%= link_to "先週", timetables_path(week_offset: params[:week_offset].to_i - 1, grade: @grade), class: "btn" %>
+  <%= link_to "先週", timetables_path(week_offset: @week_offset - 1, grade: @grade), class: "btn" , disabled: @week_offset <= -1%>
   <%= link_to "今週", timetables_path(week_offset: 0, grade: @grade), class: "btn" %>
-  <%= link_to "来週", timetables_path(week_offset: params[:week_offset].to_i + 1, grade: @grade), class: "btn" %>
+  <%= link_to "来週", timetables_path(week_offset: @week_offset + 1, grade: @grade), class: "btn" , disabled: @week_offset >= 1%>
 </div>
 
 <div class="grade-switch">
