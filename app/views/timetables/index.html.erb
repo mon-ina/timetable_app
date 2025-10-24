@@ -1,2 +1,38 @@
-<h1>Timetables#index</h1>
-<p>Find me in app/views/timetables/index.html.erb</p>
+<h2><%= "#{@grade}年の時間割（#{@week_start.strftime('%-m月%-d日')}週）" %></h2>
+
+<div class="controls">
+  <%= link_to "先週", timetables_path(week_offset: params[:week_offset].to_i - 1, grade: @grade), class: "btn" %>
+  <%= link_to "今週", timetables_path(week_offset: 0, grade: @grade), class: "btn" %>
+  <%= link_to "来週", timetables_path(week_offset: params[:week_offset].to_i + 1, grade: @grade), class: "btn" %>
+</div>
+
+<div class="grade-switch">
+  <%= link_to "1年", timetables_path(week_offset: params[:week_offset], grade: 1), class: (@grade == 1 ? "active" : "") %> |
+  <%= link_to "2年", timetables_path(week_offset: params[:week_offset], grade: 2), class: (@grade == 2 ? "active" : "") %>
+</div>
+
+<table class="timetable">
+  <thead>
+    <tr>
+      <% (0..4).each do |i| %>
+        <% date = @week_start + i.days %>
+        <th><%= date.strftime("%-m月%-d日") %></th>
+      <% end %>
+    </tr>
+    <tr>
+      <% %w(月 火 水 木 金).each do |day| %>
+        <th><%= day %></th>
+      <% end %>
+    </tr>
+  </thead>
+  <tbody>
+    <% (1..3).each do |period| %>
+      <tr>
+        <% (1..5).each do |day| %>
+          <% timetable = @timetables.find { |t| t.day_of_week == day && t.period == period } %>
+          <td><%= timetable&.subject&.name || "-" %></td>
+        <% end %>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
