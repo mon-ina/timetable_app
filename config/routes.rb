@@ -1,14 +1,16 @@
 Rails.application.routes.draw do
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  # ログイン関係
+  get 'login', to: 'sessions#new'
+  post 'login', to: 'sessions#create'
+  post 'guest_login', to: 'sessions#guest_login'
+  delete 'logout', to: 'sessions#destroy'
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get "up" => "rails/health#show", as: :rails_health_check
+  # 時間割（閲覧用）
+  resources :timetables, only: [:index]
 
-  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
+  # 科目（教員用編集）
+  resources :subjects, only: [:new, :create, :edit, :update, :destroy]
 
-  # Defines the root path route ("/")
-  # root "posts#index"
+  # トップページを時間割に
+  root 'timetables#index'
 end
