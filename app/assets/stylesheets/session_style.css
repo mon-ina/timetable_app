@@ -1,107 +1,158 @@
-/* ページ全体を中央寄せ */
+/* 全体レイアウト */
 body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f8f8f8;
-  }
-  
-  /* ログインフォーム全体 */
-  .login-container {
-    width: 390px;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    text-align: center;
-  }
-  
-  /* タイトル */
-  .login-title {
-    margin-bottom: 20px;
-    font-size: 24px;
-    font-weight: bold;
-  }
-  
-  /* フラッシュメッセージ */
-  .login-alert {
-    color: red;
-    margin-bottom: 15px;
-  }
-  
-  /* フォーム入力 */
-  .form-group {
-    margin-bottom: 15px;
-    text-align: left;
-  }
-  
-  .form-label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-  }
-  
-  .form-input {
-    width: 100%;
-    padding: 10px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    font-size: 16px;
-    box-sizing: border-box;
-  }
-  
-  /* ログインボタン */
-  .form-button {
-    width: 100%;
-    padding: 12px;
-    font-size: 18px;
-    border: none;
-    border-radius: 6px;
-    background-color: #4A69E5;
-    color: white;
-    cursor: pointer;
-  }
-  
-  .form-button:hover {
-    background-color: #0056b3;
-  }
-  
-  /* 区切り線 */
-  .divider {
-    margin: 30px 0;
-    border: none;
-    height: 1px;
-    background-color: #ccc;
-  }
-  
-  /* 生徒ログインボタン */
-  .guest-button {
-    width: 100%;
-    padding: 12px;
-    font-size: 18px;
-    border: none;
-    border-radius: 6px;
-    background-color: #40C1E5;
-    color: white;
-    cursor: pointer;
-  }
-  
-  .guest-button:hover {
-    background-color: #27a0c1;
-  }
-  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f8f8f8;
+}
 
-/* レスポンシブ: 横幅狭め */
-@media (max-width: 430px) {
-  .login-form {
-    padding: 15px;
-  }
+/* ログインフォーム全体 */
+.login-container {
+  width: 390px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  text-align: center;
+}
 
-  .form-input, .form-button, .guest-button {
-    font-size: 16px;
-    padding: 10px;
-  }
+/* タイトル */
+.login-title {
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #3a3a3a;
+}
+
+/*アカウント*/
+.label-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 6px; /* アイコンと文字の間の余白 */
+  margin-bottom: 5px; /* ラベル下の余白 */
+}
+
+.form-icon {
+  width: 38px;
+  height: 38px;
+  vertical-align: middle;
+}
+
+
+/* フラッシュメッセージ */
+.login-alert {
+  color: red;
+  margin-bottom: 15px;
+}
+
+/* 入力欄 */
+.form-group {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+.form-label {
+  margin-top: 3px;
+  font-size: 18px;
+  display: block;
+  font-weight: bold;
+  color: #3a3a3a;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+/* ログインボタン */
+.form-button {
+  width: 100%;
+  padding: 12px;
+  font-size: 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  background-color: #4A69E5;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.form-button:hover {
+  background-color: #0056b3;
+}
+
+/* 区切り線 */
+.divider {
+  position: relative;
+  border: none;
+  height: 1px;
+  background-color: #ccc;
+  margin: 30px 0;
+  overflow: visible; /* ← 文字がカットされないように */
+}
+
+.divider::before {
+  content: "または";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff; /* 背景を白にして線が透けないように */
+  padding: 0 10px;
+  color: #777;
+  font-size: 14px;
+  line-height: 1;
+}
+
+
+/* 生徒ログインボタン */
+.guest-button {
+  width: 100%;
+  padding: 12px;
+  font-size: 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  background-color: #40C1E5;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.guest-button:hover {
+  background-color: #27a0c1;
+}
+
+/* パスワード欄（アイコン付き） */
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper .form-input {
+  padding-right: 45px; /* アイコン分の余白 */
+}
+
+/* 👁 パスワード表示切り替えアイコン */
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30x;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.toggle-password:hover {
+  opacity: 1;
 }

@@ -8,3 +8,27 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+
+ /* スマホサイズ専用スタイル */
+@media (max-width: 430px) {
+    .login-container {
+      width: 90%;
+      padding: 15px;
+    }
+  
+    .login-title {
+      font-size: 20px;
+    }
+  
+    .form-input,
+    .form-button,
+    .guest-button {
+      font-size: 16px;
+      padding: 10px;
+    }
+  
+    .divider {
+      margin: 20px 0;
+    }
+  }
+  
