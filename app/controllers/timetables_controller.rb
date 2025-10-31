@@ -1,5 +1,5 @@
 class TimetablesController < ApplicationController
-  before_action :require_login
+  before_action :require_any_login
 
   def index
     @grade = params[:grade].present? ? params[:grade].to_i : 1
@@ -17,12 +17,15 @@ class TimetablesController < ApplicationController
                            .where(week_start_date: @week_start, grade: @grade)
                            .order(:day_of_week, :period)
 
-    @week_offset = week_offset # ビューでリンク生成に使用
+    @week_offset = week_offset
   end
 
   private
 
-  def require_login
-    redirect_to login_path unless session[:user_id]
+  # 教員 or 生徒がログインしていればOK
+  def require_any_login
+    unless session[:role] == 'teacher' || session[:role] == 'student'
+      redirect_to login_path, alert: "ログインが必要です"
+    end
   end
 end
