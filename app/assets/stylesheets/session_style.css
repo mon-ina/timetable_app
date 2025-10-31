@@ -6,12 +6,12 @@ body {
     min-height: 100vh;
     margin: 0;
     font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
+    background-color: #f8f8f8;
   }
   
   /* ログインフォーム全体 */
   .login-container {
-    width: 390px; /* iPhone 14 Pro Max の画面幅を想定 */
+    width: 390px;
     padding: 20px;
     background-color: #fff;
     border-radius: 12px;
@@ -60,7 +60,7 @@ body {
     font-size: 18px;
     border: none;
     border-radius: 6px;
-    background-color: #007bff;
+    background-color: #4A69E5;
     color: white;
     cursor: pointer;
   }
@@ -84,13 +84,13 @@ body {
     font-size: 18px;
     border: none;
     border-radius: 6px;
-    background-color: #28a745;
+    background-color: #40C1E5;
     color: white;
     cursor: pointer;
   }
   
   .guest-button:hover {
-    background-color: #1e7e34;
+    background-color: #27a0c1;
   }
   
 
