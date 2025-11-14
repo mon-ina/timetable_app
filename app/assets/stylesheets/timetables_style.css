@@ -1,0 +1,11 @@
+.timetables {
+    margin: 0;
+    padding: 0;
+  }
+
+.timetable-header {
+    background-color: #ffffff;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ddd;
+  }
+  
