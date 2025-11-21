@@ -1,7 +1,7 @@
 <body class="timetable-page">
 <div class="timetables">
 <header class="timetable-header">
-<h2><%= "#{@grade}年の時間割（#{@week_start.strftime('%-m月%-d日')}週）" %></h2>
+<h2><%= "時間割" %></h2>
 
 <%
 =begin%>
@@ -10,17 +10,44 @@ disabled オプションを付けるとクリック不可になります
 <%
 =end%>
 <div class="grade-switch">
-  <%= link_to "1年", timetables_path(week_offset: params[:week_offset], grade: 1), class: (@grade == 1 ? "active" : "") %> |
+  <%= link_to "1年", timetables_path(week_offset: params[:week_offset], grade: 1), class: (@grade == 1 ? "active" : "") %>
   <%= link_to "2年", timetables_path(week_offset: params[:week_offset], grade: 2), class: (@grade == 2 ? "active" : "") %>
 </div>
+<div class="grade-underline" style="transform: translateX(<%= @grade == 1 ? "0%" : "100%" %>);"></div>
 </header>
 
 
 <div class="schedule">
   <div class="controls">
-    <%= link_to "先週", timetables_path(week_offset: @week_offset - 1, grade: @grade), class: "btn" , disabled: @week_offset <= -1%>
-    <%= link_to "今週", timetables_path(week_offset: 0, grade: @grade), class: "btn" %>
-    <%= link_to "来週", timetables_path(week_offset: @week_offset + 1, grade: @grade), class: "btn" , disabled: @week_offset >= 1%>
+
+    <%# --- 左矢印（先週のときは中身を空にして幅だけ確保） --- %>
+    <span class="arrow left">
+      <% if @week_offset > -1 %>
+        <%= link_to "＜",
+            timetables_path(week_offset: @week_offset - 1, grade: @grade)
+        %>
+      <% end %>
+    </span>
+
+    <%# --- 中央のテキスト --- %>
+    <% week_label =
+        case @week_offset
+        when -1 then "先週"
+        when 0  then "今週"
+        when 1  then "来週"
+        end
+    %>
+    <span class="current-week"><%= week_label %></span>
+
+    <%# --- 右矢印 --- %>
+    <span class="arrow right">
+      <% if @week_offset < 1 %>
+        <%= link_to "＞",
+            timetables_path(week_offset: @week_offset + 1, grade: @grade)
+        %>
+      <% end %>
+    </span>
+
   </div>
 
   <table class="timetable">
@@ -49,5 +76,6 @@ disabled オプションを付けるとクリック不可になります
     </tbody>
   </table>
   </div>
+
 </div>
 <body>

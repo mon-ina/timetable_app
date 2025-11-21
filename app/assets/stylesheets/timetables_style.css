@@ -1,7 +1,7 @@
 .timetable-page {
   display: flex;
-  flex-direction: column; /* 上下に並べる */
-  align-items: center;    /* 中央寄せ */
+  flex-direction: column;
+  align-items: center;
   min-height: 100vh;
   margin: 0;
   background-color: #f8f8f8;
@@ -13,45 +13,54 @@
 }
 
 .timetable-header {
-  width: 430px;
-  max-width: 95%;        /* 画面幅に応じて縮小 */
-  background-color: #ffffff;
-  padding: 10px 20px;
-  border-bottom: 1px solid #ddd;
-  margin-bottom: 20px;   /* 下に余白を入れる */
-  text-align: center;
+  width: 100%;           /* 横幅いっぱい */
+  max-width: none;       /* 制限なし */
+  padding: 1rem 0;       /* 上下だけ余白、左右は0 */
+  margin: 0 0 2rem 0;    /* 横の自動マージンを削除 */
+  background-color: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  text-align: left;      /* タイトルも左寄せ */
+  box-sizing: border-box;
+  position: relative;
 }
 
-/* scheduleは幅390pxで中央に寄せる */
+
 .schedule {
-  width: 390px;
-  max-width: 95%;
-  padding: 20px;
+  width: 90%;
+  max-width: 430px;
+  padding: 1rem 1rem 3rem 1rem;
+  margin: 0 auto 2rem auto;
   background-color: #fff;
-  border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   text-align: center;
-  margin: 0 auto 50px auto; /* 上下マージンと中央寄せ */
+  border-radius: 15px;
+  box-sizing: border-box;
+  position: relative;
 }
+
+.timetable-header h2 {
+  text-align: left;   /* 左寄せ */
+  margin: 3rem 0 1rem 2rem; /* 上下の余白調整 */
+  font-size: 1.5rem;  /* 必要に応じて調整 */
+}
+
 
 .timetable {
   width: 100%;
-  border-collapse: collapse; /* セルの境界線をくっつける */
-  table-layout: fixed;       /* 幅を均等に固定 */
+  border-collapse: collapse;
+  table-layout: fixed;
 }
 
 .timetable th,
 .timetable td {
-  border: 1px solid #ddd;  /* 線の色 */
-  padding: 4px;             /* 余白 */
+  border: 1px solid #ddd;
+  padding: 0.3rem;
   text-align: center;
-  font-size: 9px;          /* 文字を小さく */
-  width: 20%;               /* 5列の場合、幅を均等に */
-  height: auto;             /* 高さを自動調整 */
-  white-space: normal;      /* 改行を許可 */
-  word-break: break-word;   /* 長い単語も折り返す */
+  font-size: 0.7rem;
+  width: 20%;
+  white-space: normal;
+  word-break: break-word;
 }
-
 
 .timetable th {
   background-color: #f0f0f0;
@@ -62,24 +71,53 @@
   background-color: #fff;
 }
 
+/* 下を動く underline 用のライン */
+.grade-underline {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 50%;
+  background-color: #4A69E5;
+  transition: transform 0.3s ease;
+}
+
 .grade-switch {
   display: flex;
   justify-content: center;
-  gap: 20px; /* 文字の間隔 */
-  margin-bottom: 10px;
+  gap: 10rem;
 }
 
 .grade-switch a {
-  text-decoration: none;    /* デフォルトの下線を消す */
-  color: #777;              /* 選択されてない学年の文字色 */
+  text-decoration: none;
+  color: #777;
   font-weight: bold;
-  padding-bottom: 4px;      /* 下線と文字の間の余白 */
-  border-bottom: 2px solid transparent; /* 下線用 */
-  transition: color 0.2s, border-bottom-color 0.2s;
+  font-size: 1.5rem;
 }
 
 .grade-switch a.active {
-  color: #4A69E5;                  /* 選択中の文字色 */
-  border-bottom-color: #4A69E5;    /* 下線の色 */
+  color: #4A69E5;
+  font-size: 1.5rem;
 }
 
+.controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+
+.controls .arrow {
+  width: 2.5rem;
+  text-align: center;
+}
+
+.controls a,
+.controls .current-week {
+  text-decoration: none;
+  color: #4A69E5;
+  font-weight: bold;
+  font-size: 1.5rem;
+}
