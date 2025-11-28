@@ -68,7 +68,14 @@ disabled オプションを付けるとクリック不可になります
             <tr>
               <% (1..5).each do |day| %>
                 <% timetable = @timetables.find { |t| t.day_of_week == day && t.period == period } %>
-                <td><%= timetable&.subject&.name || "-" %></td>
+                <% 
+                  cell_class = []
+                  cell_class << "changed-cell" if timetable && !timetable.base_subject
+                  cell_class << "exam-cell" if timetable&.subject&.name&.start_with?("【試験】")
+                %>
+                <td class="<%= cell_class.join(' ') %>" data-day="<%= day %>" data-period="<%= period %>">
+                  <%= timetable&.subject&.name&.gsub("【試験】", "") || "-" %>
+                </td>
               <% end %>
             </tr>
           <% end %>
@@ -80,7 +87,7 @@ disabled オプションを付けるとクリック不可になります
     <footer class="timetable-footer">
       <div class="footer-left">
         <% if session[:role] == "teacher" %>
-          <%= link_to "編集", "#", class: "footer-edit-btn" %>
+          <%= link_to "編集", "#", class: "footer-edit-btn", data: { grade: @grade } %>
         <% end %>
       </div>
 
@@ -89,6 +96,23 @@ disabled オプションを付けるとクリック不可になります
       </div>
     </footer>
 
+</div>
 
+  <!-- 編集用モーダル -->
+  <div id="edit-modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <div id="modal-body"></div>
+    </div>
   </div>
+
+  <!-- 科目選択モーダル -->
+  <div id="subject-modal" class="modal">
+    <div class="modal-content subject-modal-content">
+      <span class="close subject-close">&times;</span>
+      <h3>科目を選択</h3>
+      <div id="subject-modal-body"></div>
+    </div>
+  </div>
+
 </body>
