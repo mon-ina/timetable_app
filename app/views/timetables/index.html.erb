@@ -1,81 +1,94 @@
 <body class="timetable-page">
-<div class="timetables">
-<header class="timetable-header">
-<h2><%= "時間割" %></h2>
+  <div class="timetables">
+
+    <header class="timetable-header">
+      <h2><%= "時間割" %></h2>
 
 <%
 =begin%>
- @week_offset をコントローラーから渡して、リンクの進行方向を制限
+  @week_offset をコントローラーから渡して、リンクの進行方向を制限
 disabled オプションを付けるとクリック不可になります 
 <%
 =end%>
-<div class="grade-switch">
-  <%= link_to "1年", timetables_path(week_offset: params[:week_offset], grade: 1), class: (@grade == 1 ? "active" : "") %>
-  <%= link_to "2年", timetables_path(week_offset: params[:week_offset], grade: 2), class: (@grade == 2 ? "active" : "") %>
-</div>
-<div class="grade-underline" style="transform: translateX(<%= @grade == 1 ? "0%" : "100%" %>);"></div>
-</header>
 
+      <div class="grade-switch">
+        <%= link_to "1年", timetables_path(week_offset: params[:week_offset], grade: 1), class: (@grade == 1 ? "active" : "") %>
+        <%= link_to "2年", timetables_path(week_offset: params[:week_offset], grade: 2), class: (@grade == 2 ? "active" : "") %>
+      </div>
 
-<div class="schedule">
-  <div class="controls">
+      <div class="grade-underline" style="transform: translateX(<%= @grade == 1 ? "0%" : "100%" %>);"></div>
+    </header>
 
-    <%# --- 左矢印（先週のときは中身を空にして幅だけ確保） --- %>
-    <span class="arrow left">
-      <% if @week_offset > -1 %>
-        <%= link_to "＜",
-            timetables_path(week_offset: @week_offset - 1, grade: @grade)
-        %>
-      <% end %>
-    </span>
+    <div class="schedule">
+      <div class="controls">
 
-    <%# --- 中央のテキスト --- %>
-    <% week_label =
-        case @week_offset
-        when -1 then "先週"
-        when 0  then "今週"
-        when 1  then "来週"
-        end
-    %>
-    <span class="current-week"><%= week_label %></span>
-
-    <%# --- 右矢印 --- %>
-    <span class="arrow right">
-      <% if @week_offset < 1 %>
-        <%= link_to "＞",
-            timetables_path(week_offset: @week_offset + 1, grade: @grade)
-        %>
-      <% end %>
-    </span>
-
-  </div>
-
-  <table class="timetable">
-    <thead>
-      <tr>
-        <% (0..4).each do |i| %>
-          <% date = @week_start + i.days %>
-          <th><%= date.strftime("%-m月%-d日") %></th>
-        <% end %>
-      </tr>
-      <tr>
-        <% %w(月 火 水 木 金).each do |day| %>
-          <th><%= day %></th>
-        <% end %>
-      </tr>
-    </thead>
-    <tbody>
-      <% (1..3).each do |period| %>
-        <tr>
-          <% (1..5).each do |day| %>
-            <% timetable = @timetables.find { |t| t.day_of_week == day && t.period == period } %>
-            <td><%= timetable&.subject&.name || "-" %></td>
+        <%# --- 左矢印（先週のときは中身を空にして幅だけ確保） --- %>
+        <span class="arrow left">
+          <% if @week_offset > -1 %>
+            <%= link_to "＜", timetables_path(week_offset: @week_offset - 1, grade: @grade) %>
           <% end %>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-  </div>
+        </span>
 
-</div>
-<body>
+        <%# --- 中央のテキスト --- %>
+        <% week_label =
+            case @week_offset
+            when -1 then "先週"
+            when 0  then "今週"
+            when 1  then "来週"
+            end
+        %>
+        <span class="current-week"><%= week_label %></span>
+
+        <%# --- 右矢印 --- %>
+        <span class="arrow right">
+          <% if @week_offset < 1 %>
+            <%= link_to "＞", timetables_path(week_offset: @week_offset + 1, grade: @grade) %>
+          <% end %>
+        </span>
+
+      </div>
+
+      <table class="timetable">
+        <thead>
+          <tr>
+            <% (0..4).each do |i| %>
+              <% date = @week_start + i.days %>
+              <th><%= date.strftime("%-m月%-d日") %></th>
+            <% end %>
+          </tr>
+          <tr>
+            <% %w(月 火 水 木 金).each do |day| %>
+              <th><%= day %></th>
+            <% end %>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% (1..3).each do |period| %>
+            <tr>
+              <% (1..5).each do |day| %>
+                <% timetable = @timetables.find { |t| t.day_of_week == day && t.period == period } %>
+                <td><%= timetable&.subject&.name || "-" %></td>
+              <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <%# --- フッター --- %>
+    <footer class="timetable-footer">
+      <div class="footer-left">
+        <% if session[:role] == "teacher" %>
+          <%= link_to "編集", "#", class: "footer-edit-btn" %>
+        <% end %>
+      </div>
+
+      <div class="footer-center">
+        © 2025 Timetable App
+      </div>
+    </footer>
+
+
+  </div>
+</body>
