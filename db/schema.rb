@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_14_052247) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_28_035058) do
   create_table "subjects", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -18,7 +18,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_14_052247) do
   end
 
   create_table "timetables", force: :cascade do |t|
-    t.integer "subject_id", null: false
+    t.integer "subject_id"
     t.date "week_start_date"
     t.integer "day_of_week"
     t.integer "period"
