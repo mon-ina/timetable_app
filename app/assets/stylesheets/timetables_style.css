@@ -1,3 +1,4 @@
+/* ページ全体 */
 .timetable-page {
   display: flex;
   flex-direction: column;
@@ -5,31 +6,40 @@
   min-height: 100vh;
   margin: 0;
   background-color: #f8f8f8;
+  padding-bottom: 4rem; /* フッターでコンテンツが隠れないように */
 }
 
+/* 時間割全体 */
 .timetables {
   margin: 0;
   padding: 0;
+  width: 90%;
+  max-width: 430px; /* ヘッダー・フッターと揃える */
 }
 
+/* ヘッダー */
 .timetable-header {
-  width: 100%;           /* 横幅いっぱい */
-  max-width: none;       /* 制限なし */
-  padding: 1rem 0;       /* 上下だけ余白、左右は0 */
-  margin: 0 0 2rem 0;    /* 横の自動マージンを削除 */
+  width: 100%;
+  max-width: none;
+  padding: 6rem 1rem  1rem 1rem; /* 上下1rem、左右1rem */
+  margin: 0 0 2rem 0;
   background-color: #fff;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  text-align: left;      /* タイトルも左寄せ */
+  text-align: left;
   box-sizing: border-box;
   position: relative;
 }
 
+.timetable-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
 
+/* スケジュールコンテナ */
 .schedule {
   width: 90%;
-  max-width: 430px;
-  padding: 1rem 1rem 3rem 1rem;
-  margin: 0 auto 2rem auto;
+  padding: 2rem 1rem 4rem 1rem;
+  margin: 4rem auto 2rem auto;
   background-color: #fff;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   text-align: center;
@@ -38,13 +48,7 @@
   position: relative;
 }
 
-.timetable-header h2 {
-  text-align: left;   /* 左寄せ */
-  margin: 3rem 0 1rem 2rem; /* 上下の余白調整 */
-  font-size: 1.5rem;  /* 必要に応じて調整 */
-}
-
-
+/* 時間割テーブル */
 .timetable {
   width: 100%;
   border-collapse: collapse;
@@ -82,6 +86,7 @@
   transition: transform 0.3s ease;
 }
 
+/* 学年切り替え */
 .grade-switch {
   display: flex;
   justify-content: center;
@@ -100,6 +105,7 @@
   font-size: 1.5rem;
 }
 
+/* 週切替コントロール */
 .controls {
   display: flex;
   justify-content: center;
@@ -121,3 +127,46 @@
   font-weight: bold;
   font-size: 1.5rem;
 }
+
+/* フッター */
+.timetable-footer {
+  width: 90%;
+  max-width: 430px;
+  height: 10rem;
+  background-color: #fff;
+  box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  box-sizing: border-box;
+  z-index: 100;
+  padding: 0;
+}
+
+/* 編集ボタン */
+.footer-left a.footer-edit-btn {
+  color: #4A69E5;
+  font-weight: bold;
+  font-size: 1rem;           /* 文字を大きく */
+  text-decoration: none;
+  padding: 0.3rem 0.8rem;
+  border: 2px solid #4A69E5;
+  border-radius: 5px;
+  position: absolute;           /* 左上に固定 */
+  top: 0.5rem;
+  left: 1rem;
+}
+
+/* フッター中央テキスト */
+.footer-center {
+  color: #777;
+  font-size: 0.9rem;
+  position: absolute;
+  bottom: 0.5rem;               /* 下寄せ */
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  width: auto;
+}
+
