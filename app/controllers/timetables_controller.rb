@@ -13,9 +13,16 @@ class TimetablesController < ApplicationController
 
     @week_start = today.beginning_of_week + (week_offset * 7)
 
-    @timetables = Timetable.includes(:subject)
-                           .where(week_start_date: @week_start, grade: @grade)
-                           .order(:day_of_week, :period)
+    if @week_start.month >= 4 && @week_start.month <= 9
+      @timetables = Timetable.includes(:subject)
+      .where(week_start_date: Date.new(2025,4,1), grade: @grade)
+      .order(:day_of_week, :period)
+    else
+      @timetables = Timetable.includes(:subject)
+      .where(week_start_date: Date.new(2025,4,1), grade: @grade)
+      .order(:day_of_week, :period)
+    end
+    
 
     @week_offset = week_offset
   end

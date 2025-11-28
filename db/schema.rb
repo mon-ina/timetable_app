@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_17_032607) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_14_052247) do
   create_table "subjects", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -25,6 +25,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_17_032607) do
     t.integer "grade"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "base_subject"
     t.index ["subject_id"], name: "index_timetables_on_subject_id"
   end
 
