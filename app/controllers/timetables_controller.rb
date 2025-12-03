@@ -38,13 +38,34 @@ class TimetablesController < ApplicationController
     today = Date.today
     @week_start = today.beginning_of_week + (@week_offset * 7)
     
+    Rails.logger.info "=" * 50
+    Rails.logger.info "Edit modal - Week start: #{@week_start}, Grade: #{@grade}"
+    
     @timetables = Timetable.includes(:subject)
       .where(week_start_date: @week_start, grade: @grade)
       .order(:day_of_week, :period)
     
+    Rails.logger.info "Found #{@timetables.count} timetables"
+    
+    # データが無ければデフォルトの時間割を作成
+    if @timetables.empty?
+      Rails.logger.info "Creating default timetable..."
+      create_default_timetable(@week_start, @grade)
+      @timetables = Timetable.includes(:subject)
+        .where(week_start_date: @week_start, grade: @grade)
+        .order(:day_of_week, :period)
+      Rails.logger.info "Created #{@timetables.count} timetables"
+    end
+    
+    @timetables.each do |t|
+      Rails.logger.info "  Day: #{t.day_of_week}, Period: #{t.period}, Subject: #{t.subject&.name}, Changed: #{!t.base_subject}"
+    end
+    Rails.logger.info "=" * 50
+    
     # 学年ごとの科目リスト
     subject_names = if @grade == 1
       [
+        "-",
         "テクノロジ・ハードウェア分野Ⅰ","C言語基礎Ⅰ","WebデザインⅠ",
         "ストラテジ分野Ⅰ","データベース技術Ⅰ","HTML・CSSⅠ",
         "マネジメント分野Ⅰ","総合実践Ⅰ","Ruby基礎Ⅰ",
@@ -53,6 +74,7 @@ class TimetablesController < ApplicationController
       ]
     else
       [
+        "-",
         "グループマネジメントⅡ","WebデザインⅢ","WebデザインⅣ",
         "JavaScriptⅡ","国家試験対策Ⅲ","総合実践Ⅲ",
         "PythonⅠ","制作演習Ⅱ","キャリア演習Ⅱ","企業講演会Ⅱ",
@@ -60,11 +82,12 @@ class TimetablesController < ApplicationController
       ]
     end
     
-    @all_subjects = Subject.where(name: subject_names).order(:name)
+    # "-" 以外の科目だけSubjectから取得
+    @all_subjects = Subject.where(name: subject_names.reject { |n| n == "-" }).order(:name)
     
     render partial: 'edit_modal', locals: { timetables: @timetables, all_subjects: @all_subjects, grade: @grade }
   end
-
+  
   def update_subject
     @timetable = Timetable.find(params[:id])
     
@@ -73,21 +96,17 @@ class TimetablesController < ApplicationController
     is_exam = params[:is_exam] == "true" || params[:is_exam] == true
     
     # 試験の場合は科目名に「【試験】」をプレフィックスとして付ける
-    # base_subjectをfalseにして変更済みとマーク
     if is_exam && subject_id.present?
-      # 既存の科目名を取得
       subject = Subject.find(subject_id)
-      # 「【試験】科目名」という名前の科目を作成または取得
       exam_subject = Subject.find_or_create_by!(name: "【試験】#{subject.name}")
       subject_id = exam_subject.id
     end
     
     @timetable.update(
       subject_id: subject_id,
-      base_subject: false  # 変更されたのでfalseに
+      base_subject: false
     )
     
-    # 試験かどうかを科目名から判断
     is_exam_result = @timetable.subject&.name&.start_with?("【試験】") || false
     
     render json: { 
@@ -114,25 +133,48 @@ class TimetablesController < ApplicationController
     end
   end
 
-  # デフォルトの時間割を作成
+  # デフォルトの時間割を作成（前期・後期を自動判定）
   def create_default_timetable(week_start, grade)
+    # 4月〜9月は前期、10月〜3月は後期
+    is_first_half = week_start.month >= 4 && week_start.month <= 9
+    
     # デフォルト時間割データ
     timetable_data = if grade == 1
-      [
-        ["テクノロジ・ハードウェア分野Ⅰ","C言語基礎Ⅰ","WebデザインⅠ"], # 月
-        ["ストラテジ分野Ⅰ","データベース技術Ⅰ","HTML・CSSⅠ"], # 火
-        ["マネジメント分野Ⅰ","総合実践Ⅰ","Ruby基礎Ⅰ"], # 水
-        ["グループマネジメントⅠ","カラーマネジメントⅠ","JavaScriptⅠ"], # 木
-        ["国家試験対策Ⅰ","制作演習Ⅰ"] # 金
-      ]
+      if is_first_half
+        [
+          ["テクノロジ・ハードウェア分野Ⅰ","C言語基礎Ⅰ","WebデザインⅠ"], # 月
+          ["ストラテジ分野Ⅰ","データベース技術Ⅰ","HTML・CSSⅠ"], # 火
+          ["マネジメント分野Ⅰ","総合実践Ⅰ","Ruby基礎Ⅰ"], # 水
+          ["グループマネジメントⅠ","カラーマネジメントⅠ","JavaScriptⅠ"], # 木
+          ["国家試験対策Ⅰ","制作演習Ⅰ"] # 金
+        ]
+      else
+        [
+          ["テクノロジ・ハードウェア分野Ⅰ","C言語基礎Ⅰ","WebデザインⅠ"], # 月
+          ["ストラテジ分野Ⅰ","データベース技術Ⅰ","HTML・CSSⅠ"], # 火
+          ["マネジメント分野Ⅰ","総合実践Ⅰ","Ruby基礎Ⅰ"], # 水
+          ["グループマネジメントⅠ","カラーマネジメントⅠ","JavaScriptⅠ"], # 木
+          ["Ruby基礎Ⅰ","Ruby基礎Ⅰ"] # 金
+        ]
+      end
     else
-      [
-        ["グループマネジメントⅡ","WebデザインⅢ","WebデザインⅣ"],
-        ["JavaScriptⅡ","国家試験対策Ⅲ","総合実践Ⅲ"],
-        ["PythonⅠ","制作演習Ⅱ","キャリア演習Ⅱ"],
-        ["企業講演会Ⅱ","WebデザインⅢ","JavaScriptⅡ"],
-        ["RailsⅠ/AndroidⅠ","RailsⅠ/AndroidⅠ"]
-      ]
+      if is_first_half
+        [
+          ["グループマネジメントⅡ","WebデザインⅢ","WebデザインⅣ"],
+          ["JavaScriptⅡ","国家試験対策Ⅲ","総合実践Ⅲ"],
+          ["PythonⅠ","制作演習Ⅱ","キャリア演習Ⅱ"],
+          ["企業講演会Ⅱ","WebデザインⅢ","JavaScriptⅡ"],
+          ["RailsⅠ/AndroidⅠ","RailsⅠ/AndroidⅠ"]
+        ]
+      else
+        [
+          ["グループマネジメントⅡ","WebデザインⅢ","WebデザインⅣ"],
+          ["JavaScriptⅡ","国家試験対策Ⅲ","総合実践Ⅲ"],
+          ["PythonⅠ","制作演習Ⅱ","キャリア演習Ⅱ"],
+          ["企業講演会Ⅱ","WebデザインⅢ","JavaScriptⅡ"],
+          ["RailsⅡ/AndroidⅡ","RailsⅡ/AndroidⅡ"]
+        ]
+      end
     end
 
     # 科目を取得
@@ -172,6 +214,7 @@ class TimetablesController < ApplicationController
       end
     end
 
-    Rails.logger.info "Created default timetable for week: #{week_start}, grade: #{grade}"
+    semester = is_first_half ? "前期" : "後期"
+    Rails.logger.info "Created default timetable (#{semester}) for week: #{week_start}, grade: #{grade}"
   end
 end

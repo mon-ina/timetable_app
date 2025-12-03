@@ -1,4 +1,4 @@
-// Configure your import map in config/importmap.rb. Read more: https://github.com/rails/importmap-rails
+// app/javascript/application.js
 import "@hotwired/turbo-rails"
 import "controllers"
 
@@ -15,6 +15,13 @@ document.addEventListener('turbo:load', function() {
         const grade = this.dataset.grade;
         const weekOffset = this.dataset.weekOffset;
         
+        console.log('='.repeat(50));
+        console.log('Edit button clicked');
+        console.log('Grade:', grade);
+        console.log('Week Offset:', weekOffset);
+        console.log('URL:', `/timetables/edit_modal?grade=${grade}&week_offset=${weekOffset}`);
+        console.log('='.repeat(50));
+        
         fetch(`/timetables/edit_modal?grade=${grade}&week_offset=${weekOffset}`, {
           headers: {
             'Accept': 'text/html'
@@ -22,9 +29,13 @@ document.addEventListener('turbo:load', function() {
         })
         .then(response => response.text())
         .then(html => {
+          console.log('Modal content received');
           document.getElementById('modal-body').innerHTML = html;
           editModal.style.display = 'block';
           attachCellClickEvents();
+        })
+        .catch(error => {
+          console.error('Error:', error);
         });
       });
     }
@@ -32,12 +43,16 @@ document.addEventListener('turbo:load', function() {
     // セルクリックイベント
     function attachCellClickEvents() {
       const cells = document.querySelectorAll('.editable-cell');
+      console.log('Attaching click events to', cells.length, 'cells');
+      
       cells.forEach(cell => {
         cell.addEventListener('click', function() {
           const timetableId = this.dataset.timetableId;
           const day = this.dataset.day;
           const period = this.dataset.period;
           const currentSubject = this.textContent.trim();
+          
+          console.log('Cell clicked - ID:', timetableId, 'Day:', day, 'Period:', period);
           
           showSubjectModal(timetableId, currentSubject, this, day, period);
         });
@@ -76,6 +91,8 @@ document.addEventListener('turbo:load', function() {
   
     // 科目更新
     function updateSubject(timetableId, subjectId, cellElement, day, period, isExam) {
+      console.log('Updating timetable ID:', timetableId, 'with subject ID:', subjectId);
+      
       fetch(`/timetables/${timetableId}/update_subject`, {
         method: 'PATCH',
         headers: {
@@ -89,6 +106,8 @@ document.addEventListener('turbo:load', function() {
       })
       .then(response => response.json())
       .then(data => {
+        console.log('Update response:', data);
+        
         if (data.success) {
           // 【試験】プレフィックスを除去して表示
           const displayName = data.subject_name.replace("【試験】", "");
@@ -109,8 +128,10 @@ document.addEventListener('turbo:load', function() {
           updateMainTimetable(day, period, displayName, data.is_changed, data.is_exam);
           
           subjectModal.style.display = 'none';
-          alert('変更しました');
         }
+      })
+      .catch(error => {
+        console.error('Update error:', error);
       });
     }
   
