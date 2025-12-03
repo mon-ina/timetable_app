@@ -26,14 +26,85 @@
   margin: 0 auto 2rem auto;
   background-color: #fff;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  text-align: left;
   box-sizing: border-box;
   position: relative;
+}
+
+/* 上段：時間割 + ログイン状態を横並び */
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;  /* 高さ揃える */
+  width: 100%;
 }
 
 .timetable-header h2 {
   margin: 0;
   font-size: 1.5rem;
+}
+
+/* ログイン状態の表示 */
+/* 共通デザイン */
+.login-role-label {
+  display: inline-flex;          /* ← 横並びにする */
+  align-items: center;           /* ← 縦揃え */
+  gap: 0.4rem;                   /* ← 文字との間隔 */
+  color: #fff;
+  padding: 0.5rem 0.7rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: bold;
+  white-space: nowrap;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+
+/* アイコン画像のサイズ調整 */
+.login-icon {
+  width: 25px;     /* 好みに応じて調整 */
+  height: 25px;
+}
+
+/* 教員用（濃い青） */
+.login-role-label.teacher {
+  background-color: #4A69E5;
+}
+
+/* 生徒用（ライトブルー） */
+.login-role-label.student {
+  background-color: #40C1E5;
+}
+
+
+
+/* 学年切り替え */
+.grade-switch {
+  display: flex;
+  justify-content: center;
+  gap: 10rem;
+  margin-top: 1rem;
+}
+
+.grade-switch a {
+  text-decoration: none;
+  color: #777;
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+.grade-switch a.active {
+  color: #4A69E5;
+  font-size: 1.5rem;
+}
+
+/* 下を動く underline 用のライン */
+.grade-underline {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 50%;
+  background-color: #4A69E5;
+  transition: transform 0.3s ease;
 }
 
 /* スケジュールコンテナ */
@@ -74,36 +145,6 @@
 
 .timetable td {
   background-color: #fff;
-}
-
-/* 下を動く underline 用のライン */
-.grade-underline {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 3px;
-  width: 50%;
-  background-color: #4A69E5;
-  transition: transform 0.3s ease;
-}
-
-/* 学年切り替え */
-.grade-switch {
-  display: flex;
-  justify-content: center;
-  gap: 10rem;
-}
-
-.grade-switch a {
-  text-decoration: none;
-  color: #777;
-  font-weight: bold;
-  font-size: 1.5rem;
-}
-
-.grade-switch a.active {
-  color: #4A69E5;
-  font-size: 1.5rem;
 }
 
 /* 週切替コントロール */
@@ -149,12 +190,12 @@
 .footer-left a.footer-edit-btn {
   color: #4A69E5;
   font-weight: bold;
-  font-size: 1rem;           /* 文字を大きく */
+  font-size: 1rem;
   text-decoration: none;
   padding: 0.3rem 0.8rem;
   border: 2px solid #4A69E5;
   border-radius: 5px;
-  position: absolute;           /* 左上に固定 */
+  position: absolute;
   top: 0.5rem;
   left: 1rem;
 }
@@ -164,10 +205,9 @@
   color: #777;
   font-size: 0.9rem;
   position: absolute;
-  bottom: 0.5rem;               /* 下寄せ */
+  bottom: 0.5rem;
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
   width: auto;
 }
-

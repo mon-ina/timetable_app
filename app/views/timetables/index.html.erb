@@ -2,7 +2,23 @@
   <div class="timetables">
 
     <header class="timetable-header">
-      <h2><%= "時間割" %></h2>
+      <div class="header-top">
+        <h2>時間割</h2>
+
+        <!-- ログイン状態の表示 -->
+        <div class="login-role-label <%= session[:role] %>">
+          
+
+          <% if session[:role] == "teacher" %>
+            教員としてログイン中
+          <% else %>
+            生徒としてログイン中
+          <% end %>
+          <%= image_tag "icon.svg", class: "login-icon" %>
+        </div>
+
+
+      </div>
 
 <%
 =begin%>
