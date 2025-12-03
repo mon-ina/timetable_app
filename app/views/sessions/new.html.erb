@@ -6,7 +6,7 @@
     <p class="login-alert"><%= flash[:alert] %></p>
   <% end %>
 
-  <%= form_with url: login_path, local: true, html: { class: "login-form" } do |f| %>
+  <%= form_with url: login_path, local: true, data: { turbo: false }, html: { class: "login-form" } do |f| %>
   <div class="form-group">
     <div class="label-with-icon">
       <%= image_tag "account.svg", alt: "アカウントアイコン", class: "form-icon" %>

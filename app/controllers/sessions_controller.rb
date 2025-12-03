@@ -10,7 +10,7 @@ class SessionsController < ApplicationController
       session[:role] = user.role
       redirect_to timetables_path
     else
-      flash.now[:alert] = "アカウント名またはパスワードが間違っています"
+      flash.now[:alert] = "アカウント名orパスワードが間違っています"
       render :new
     end
   end
