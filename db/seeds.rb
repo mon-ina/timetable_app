@@ -1,4 +1,3 @@
-# db/seeds.rb
 Timetable.destroy_all
 Subject.destroy_all
 
@@ -62,37 +61,8 @@ timetable_last_half_2 = [
   ["RailsⅡ/AndroidⅡ","RailsⅡ/AndroidⅡ"]
 ]
 
-# --- 先週・今週・来週の3週分 ---
-week_start = Date.new(2025,4,1)
-
-# 1年
-(1..5).each do |day|
-  timetable_first_half_1[day-1].each_with_index do |subject_name, index|
-    Timetable.create!(
-      grade: 1,
-      week_start_date: week_start,
-      day_of_week: day,
-      period: index + 1,
-      subject: subjects_1[subject_name],
-      base_subject: true
-    )
-  end
-end
-
-# 2年
-(1..5).each do |day|
-  timetable_first_half_2[day-1].each_with_index do |subject_name, index|
-    Timetable.create!(
-      grade: 2,
-      week_start_date: week_start,
-      day_of_week: day,
-      period: index + 1,
-      subject: subjects_2[subject_name],
-      base_subject: true
-    )
-  end
-end
+# --- 先週・今週・来週の3週分のデータを作成（前期・後期は作成時に判定） ---
+# このseedは初期データ作成用なので、ここでは作成しない
+# 実際のデータはコントローラーで週ごとに自動生成される
 
 puts "✅ Seed completed! 1年科目: #{subjects_1.count}, 2年科目: #{subjects_2.count}"
-puts "✅ 1年時間割: #{Timetable.where(grade: 1).count}件"
-puts "✅ 2年時間割: #{Timetable.where(grade: 2).count}件"

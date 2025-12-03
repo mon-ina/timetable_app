@@ -87,7 +87,7 @@ disabled オプションを付けるとクリック不可になります
     <footer class="timetable-footer">
       <div class="footer-left">
         <% if session[:role] == "teacher" %>
-          <%= link_to "編集", "#", class: "footer-edit-btn", data: { grade: @grade } %>
+          <%= link_to "編集", "#", class: "footer-edit-btn", data: { grade: @grade, week_offset: @week_offset }  %>
         <% end %>
       </div>
 
