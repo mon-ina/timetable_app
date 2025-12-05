@@ -1,0 +1,29 @@
+<table class="timetable edit-timetable">
+  <thead>
+    <tr>
+      <th>時限</th>
+      <% %w(月 火 水 木 金).each do |day| %>
+        <th><%= day %></th>
+      <% end %>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% (1..3).each do |period| %>
+      <tr>
+        <td><%= "#{period}限" %></td>
+        <% (1..5).each do |day| %>
+          <% default_timetable = default_timetables.find { |t| t.day_of_week == day && t.period == period } %>
+          <td 
+            class="editable-cell default-editable-cell" 
+            data-default-timetable-id="<%= default_timetable&.id %>"
+            data-day="<%= day %>"
+            data-period="<%= period %>"
+          >
+            <%= default_timetable&.subject&.name || "-" %>
+          </td>
+        <% end %>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

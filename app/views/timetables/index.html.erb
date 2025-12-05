@@ -104,6 +104,7 @@ disabled オプションを付けるとクリック不可になります
       <div class="footer-left">
         <% if session[:role] == "teacher" %>
           <%= link_to "編集", "#", class: "footer-edit-btn", data: { grade: @grade, week_offset: @week_offset }  %>
+          <%= link_to "デフォルトの時間割を変更", "#", class: "footer-default-btn", data: { grade: @grade } %>
         <% end %>
       </div>
 

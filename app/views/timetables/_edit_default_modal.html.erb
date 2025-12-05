@@ -1,0 +1,42 @@
+<%# app/views/timetables/_edit_default_modal.html.erb %>
+<h2><%= "#{grade}年 デフォルト時間割編集" %></h2>
+
+<div class="semester-tabs">
+  <button class="semester-tab" data-semester="1">前期</button>
+  <button class="semester-tab" data-semester="2">後期</button>
+</div>
+
+<div id="default-timetable-container">
+  <table class="timetable edit-timetable">
+    <thead>
+      <tr>
+        <th>時限</th>
+        <% %w(月 火 水 木 金).each do |day| %>
+          <th><%= day %></th>
+        <% end %>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% (1..3).each do |period| %>
+        <tr>
+          <td><%= "#{period}限" %></td>
+          <% (1..5).each do |day| %>
+            <% default_timetable = default_timetables.find { |t| t.day_of_week == day && t.period == period } %>
+            <td 
+              class="editable-cell default-editable-cell" 
+              data-default-timetable-id="<%= default_timetable&.id %>"
+              data-day="<%= day %>"
+              data-period="<%= period %>"
+            >
+              <%= default_timetable&.subject&.name || "-" %>
+            </td>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<div style="display:none;" id="default-all-subjects" data-subjects='<%= all_subjects.to_json(only: [:id, :name]) %>'></div>
+<div style="display:none;" id="current-grade" data-grade="<%= grade %>"></div>

@@ -117,6 +117,45 @@ class TimetablesController < ApplicationController
     }
   end
 
+  def edit_default_modal
+    @grade = params[:grade].to_i
+    @semester = params[:semester].to_i # 1: 前期, 2: 後期
+    
+    @default_timetables = DefaultTimetable.includes(:subject)
+      .where(grade: @grade, semester: @semester)
+      .order(:day_of_week, :period)
+    
+    # 学年ごとの科目リスト
+    subject_names = if @grade == 1
+      [
+        "-",
+        "テクノロジ・ハードウェア分野Ⅰ","C言語基礎Ⅰ","WebデザインⅠ",
+        "ストラテジ分野Ⅰ","データベース技術Ⅰ","HTML・CSSⅠ",
+        "マネジメント分野Ⅰ","総合実践Ⅰ","Ruby基礎Ⅰ",
+        "グループマネジメントⅠ","カラーマネジメントⅠ","JavaScriptⅠ",
+        "国家試験対策Ⅰ","制作演習Ⅰ","ビジネススキルⅠ"
+      ]
+    else
+      [
+        "-",
+        "グループマネジメントⅡ","WebデザインⅢ","WebデザインⅣ",
+        "JavaScriptⅡ","国家試験対策Ⅲ","総合実践Ⅲ",
+        "PythonⅠ","制作演習Ⅱ","キャリア演習Ⅱ","企業講演会Ⅱ",
+        "RailsⅠ/AndroidⅠ","RailsⅡ/AndroidⅡ"
+      ]
+    end
+    
+    @all_subjects = Subject.where(name: subject_names.reject { |n| n == "-" }).order(:name)
+    
+    render partial: 'edit_default_modal', locals: { 
+      default_timetables: @default_timetables, 
+      all_subjects: @all_subjects, 
+      grade: @grade,
+      semester: @semester
+    }
+  end
+end
+
   private
 
   # 教員 or 生徒がログインしていればOK
@@ -137,84 +176,24 @@ class TimetablesController < ApplicationController
   def create_default_timetable(week_start, grade)
     # 4月〜9月は前期、10月〜3月は後期
     is_first_half = week_start.month >= 4 && week_start.month <= 9
+    semester = is_first_half ? 1 : 2
     
-    # デフォルト時間割データ
-    timetable_data = if grade == 1
-      if is_first_half
-        [
-          ["テクノロジ・ハードウェア分野Ⅰ","C言語基礎Ⅰ","WebデザインⅠ"], # 月
-          ["ストラテジ分野Ⅰ","データベース技術Ⅰ","HTML・CSSⅠ"], # 火
-          ["マネジメント分野Ⅰ","総合実践Ⅰ","Ruby基礎Ⅰ"], # 水
-          ["グループマネジメントⅠ","カラーマネジメントⅠ","JavaScriptⅠ"], # 木
-          ["国家試験対策Ⅰ","制作演習Ⅰ"] # 金
-        ]
-      else
-        [
-          ["テクノロジ・ハードウェア分野Ⅰ","C言語基礎Ⅰ","WebデザインⅠ"], # 月
-          ["ストラテジ分野Ⅰ","データベース技術Ⅰ","HTML・CSSⅠ"], # 火
-          ["マネジメント分野Ⅰ","総合実践Ⅰ","Ruby基礎Ⅰ"], # 水
-          ["グループマネジメントⅠ","カラーマネジメントⅠ","JavaScriptⅠ"], # 木
-          ["Ruby基礎Ⅰ","Ruby基礎Ⅰ"] # 金
-        ]
-      end
-    else
-      if is_first_half
-        [
-          ["グループマネジメントⅡ","WebデザインⅢ","WebデザインⅣ"],
-          ["JavaScriptⅡ","国家試験対策Ⅲ","総合実践Ⅲ"],
-          ["PythonⅠ","制作演習Ⅱ","キャリア演習Ⅱ"],
-          ["企業講演会Ⅱ","WebデザインⅢ","JavaScriptⅡ"],
-          ["RailsⅠ/AndroidⅠ","RailsⅠ/AndroidⅠ"]
-        ]
-      else
-        [
-          ["グループマネジメントⅡ","WebデザインⅢ","WebデザインⅣ"],
-          ["JavaScriptⅡ","国家試験対策Ⅲ","総合実践Ⅲ"],
-          ["PythonⅠ","制作演習Ⅱ","キャリア演習Ⅱ"],
-          ["企業講演会Ⅱ","WebデザインⅢ","JavaScriptⅡ"],
-          ["RailsⅡ/AndroidⅡ","RailsⅡ/AndroidⅡ"]
-        ]
-      end
+    # デフォルト時間割から取得
+    default_timetables = DefaultTimetable.where(grade: grade, semester: semester)
+    
+    default_timetables.each do |default_tt|
+      Timetable.create!(
+        grade: grade,
+        week_start_date: week_start,
+        day_of_week: default_tt.day_of_week,
+        period: default_tt.period,
+        subject: default_tt.subject,
+        base_subject: true
+      )
     end
-
-    # 科目を取得
-    subject_names = if grade == 1
-      [
-        "テクノロジ・ハードウェア分野Ⅰ","C言語基礎Ⅰ","WebデザインⅠ",
-        "ストラテジ分野Ⅰ","データベース技術Ⅰ","HTML・CSSⅠ",
-        "マネジメント分野Ⅰ","総合実践Ⅰ","Ruby基礎Ⅰ",
-        "グループマネジメントⅠ","カラーマネジメントⅠ","JavaScriptⅠ",
-        "国家試験対策Ⅰ","制作演習Ⅰ","ビジネススキルⅠ"
-      ]
-    else
-      [
-        "グループマネジメントⅡ","WebデザインⅢ","WebデザインⅣ",
-        "JavaScriptⅡ","国家試験対策Ⅲ","総合実践Ⅲ",
-        "PythonⅠ","制作演習Ⅱ","キャリア演習Ⅱ","企業講演会Ⅱ",
-        "RailsⅠ/AndroidⅠ","RailsⅡ/AndroidⅡ"
-      ]
-    end
-
-    subjects = {}
-    subject_names.each do |name|
-      subjects[name] = Subject.find_or_create_by!(name: name)
-    end
-
-    # 時間割を作成
-    (1..5).each do |day|
-      timetable_data[day-1].each_with_index do |subject_name, index|
-        Timetable.create!(
-          grade: grade,
-          week_start_date: week_start,
-          day_of_week: day,
-          period: index + 1,
-          subject: subjects[subject_name],
-          base_subject: true
-        )
-      end
-    end
-
-    semester = is_first_half ? "前期" : "後期"
-    Rails.logger.info "Created default timetable (#{semester}) for week: #{week_start}, grade: #{grade}"
+    
+    semester_name = is_first_half ? "前期" : "後期"
+    Rails.logger.info "Created timetable from defaults (#{semester_name}) for week: #{week_start}, grade: #{grade}"
   end
-end
+
+  

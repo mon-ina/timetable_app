@@ -1,24 +1,29 @@
+# config/routes.rb
 Rails.application.routes.draw do
-  # ログイン関係
-  get 'login', to: 'sessions#new'
-  post 'login', to: 'sessions#create'
-  post 'guest_login', to: 'sessions#guest_login'
-  delete 'logout', to: 'sessions#destroy'
+  # ログイン関連
+  get "login", to: "sessions#new"
+  post "login", to: "sessions#create"
+  post "guest_login", to: "sessions#guest_login"
+  delete "logout", to: "sessions#destroy"
 
-  # 時間割（閲覧用）
+  # ルートパス
+  root "sessions#new"
+
+  # 時間割
   resources :timetables, only: [:index] do
     collection do
-      get :edit_modal  # 編集用のモーダル表示
+      get :edit_modal
+      get :edit_default_modal  # デフォルト時間割編集モーダル
     end
     member do
-      patch :update_subject  # 科目の更新
+      patch :update_subject
     end
   end
-
-  # 科目（教員用編集）
-  resources :subjects, only: [:new, :create, :edit, :update, :destroy]
-
-  # トップページを時間割に
-  root 'sessions#new'
-
+  
+  # デフォルト時間割
+  resources :default_timetables, only: [] do
+    member do
+      patch :update_subject  # デフォルト時間割の科目更新
+    end
+  end
 end

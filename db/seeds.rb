@@ -1,5 +1,7 @@
+# db/seeds.rb
 Timetable.destroy_all
 Subject.destroy_all
+DefaultTimetable.destroy_all
 
 # --- 1年科目 ---
 subjects_1_names = [
@@ -29,40 +31,65 @@ subjects_2_names.each do |name|
 end
 
 # --- デフォルト時間割データ ---
-timetable_first_half_1 = [
-  ["テクノロジ・ハードウェア分野Ⅰ","C言語基礎Ⅰ","WebデザインⅠ"], # 月
-  ["ストラテジ分野Ⅰ","データベース技術Ⅰ","HTML・CSSⅠ"], # 火
-  ["マネジメント分野Ⅰ","総合実践Ⅰ","Ruby基礎Ⅰ"], # 水
-  ["グループマネジメントⅠ","カラーマネジメントⅠ","JavaScriptⅠ"], # 木
-  ["国家試験対策Ⅰ","制作演習Ⅰ"] # 金
-]
+default_timetables = {
+  # 1年前期
+  1 => {
+    1 => [
+      ["テクノロジ・ハードウェア分野Ⅰ","C言語基礎Ⅰ","WebデザインⅠ"], # 月
+      ["ストラテジ分野Ⅰ","データベース技術Ⅰ","HTML・CSSⅠ"], # 火
+      ["マネジメント分野Ⅰ","総合実践Ⅰ","Ruby基礎Ⅰ"], # 水
+      ["グループマネジメントⅠ","カラーマネジメントⅠ","JavaScriptⅠ"], # 木
+      ["国家試験対策Ⅰ","制作演習Ⅰ"] # 金
+    ],
+    # 1年後期
+    2 => [
+      ["テクノロジ・ハードウェア分野Ⅰ","C言語基礎Ⅰ","WebデザインⅠ"], # 月
+      ["ストラテジ分野Ⅰ","データベース技術Ⅰ","HTML・CSSⅠ"], # 火
+      ["マネジメント分野Ⅰ","総合実践Ⅰ","Ruby基礎Ⅰ"], # 水
+      ["グループマネジメントⅠ","カラーマネジメントⅠ","JavaScriptⅠ"], # 木
+      ["Ruby基礎Ⅰ","Ruby基礎Ⅰ"] # 金
+    ]
+  },
+  # 2年前期
+  2 => {
+    1 => [
+      ["グループマネジメントⅡ","WebデザインⅢ","WebデザインⅣ"],
+      ["JavaScriptⅡ","国家試験対策Ⅲ","総合実践Ⅲ"],
+      ["PythonⅠ","制作演習Ⅱ","キャリア演習Ⅱ"],
+      ["企業講演会Ⅱ","WebデザインⅢ","JavaScriptⅡ"],
+      ["RailsⅠ/AndroidⅠ","RailsⅠ/AndroidⅠ"]
+    ],
+    # 2年後期
+    2 => [
+      ["グループマネジメントⅡ","WebデザインⅢ","WebデザインⅣ"],
+      ["JavaScriptⅡ","国家試験対策Ⅲ","総合実践Ⅲ"],
+      ["PythonⅠ","制作演習Ⅱ","キャリア演習Ⅱ"],
+      ["企業講演会Ⅱ","WebデザインⅢ","JavaScriptⅡ"],
+      ["RailsⅡ/AndroidⅡ","RailsⅡ/AndroidⅡ"]
+    ]
+  }
+}
 
-timetable_last_half_1 = [
-  ["テクノロジ・ハードウェア分野Ⅰ","C言語基礎Ⅰ","WebデザインⅠ"], # 月
-  ["ストラテジ分野Ⅰ","データベース技術Ⅰ","HTML・CSSⅠ"], # 火
-  ["マネジメント分野Ⅰ","総合実践Ⅰ","Ruby基礎Ⅰ"], # 水
-  ["グループマネジメントⅠ","カラーマネジメントⅠ","JavaScriptⅠ"], # 木
-  ["Ruby基礎Ⅰ","Ruby基礎Ⅰ"] # 金
-]
+# デフォルト時間割を作成
+[1, 2].each do |grade|
+  [1, 2].each do |semester|
+    timetable_data = default_timetables[grade][semester]
+    subjects = grade == 1 ? subjects_1 : subjects_2
+    
+    (1..5).each do |day|
+      timetable_data[day-1].each_with_index do |subject_name, index|
+        DefaultTimetable.create!(
+          grade: grade,
+          semester: semester,
+          day_of_week: day,
+          period: index + 1,
+          subject: subjects[subject_name]
+        )
+      end
+    end
+  end
+end
 
-timetable_first_half_2 = [
-  ["グループマネジメントⅡ","WebデザインⅢ","WebデザインⅣ"],
-  ["JavaScriptⅡ","国家試験対策Ⅲ","総合実践Ⅲ"],
-  ["PythonⅠ","制作演習Ⅱ","キャリア演習Ⅱ"],
-  ["企業講演会Ⅱ","WebデザインⅢ","JavaScriptⅡ"],
-  ["RailsⅠ/AndroidⅠ","RailsⅠ/AndroidⅠ"]
-]
-
-timetable_last_half_2 = [
-  ["グループマネジメントⅡ","WebデザインⅢ","WebデザインⅣ"],
-  ["JavaScriptⅡ","国家試験対策Ⅲ","総合実践Ⅲ"],
-  ["PythonⅠ","制作演習Ⅱ","キャリア演習Ⅱ"],
-  ["企業講演会Ⅱ","WebデザインⅢ","JavaScriptⅡ"],
-  ["RailsⅡ/AndroidⅡ","RailsⅡ/AndroidⅡ"]
-]
-
-# --- 先週・今週・来週の3週分のデータを作成（前期・後期は作成時に判定） ---
-# このseedは初期データ作成用なので、ここでは作成しない
-# 実際のデータはコントローラーで週ごとに自動生成される
-
-puts "✅ Seed completed! 1年科目: #{subjects_1.count}, 2年科目: #{subjects_2.count}"
+puts "✅ Seed completed!"
+puts "✅ 1年科目: #{subjects_1.count}, 2年科目: #{subjects_2.count}"
+puts "✅ デフォルト時間割: #{DefaultTimetable.count}件"
