@@ -211,3 +211,166 @@
   text-align: center;
   width: auto;
 }
+
+/* スイッチのラベル（Lightmode / Darkmode） */
+.theme-label {
+  font-size: 0.8rem;
+  color: #555;
+  text-align: center;
+  margin-bottom: 0.2rem;
+  position: absolute;
+  top: -1.2rem;
+  right: 0;
+  width: 100%;
+}
+
+/* スイッチ配置 */
+.footer-right {
+  position: absolute;
+  top: 1.6rem;
+  right: 1rem;
+  text-align: center;
+}
+
+/* トグルスイッチ本体 */
+.theme-switch__input,
+.theme-switch__label {
+  position: absolute;
+  z-index: 1;
+}
+
+.theme-switch__input {
+  opacity: 0;
+  width: 60px;
+  height: 30px;
+  cursor: pointer;
+}
+
+.theme-switch__label {
+  width: 60px;
+  height: 30px;
+  background-color: #ccc;
+  border-radius: 50px;
+  position: relative;
+  display: block;
+  cursor: pointer;
+  transition: background-color .3s;
+}
+
+/* ノブ */
+.theme-switch__label span::after {
+  content: "";
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  background-color: white;
+  border-radius: 50%;
+  top: 2px;
+  left: 2px;
+  transition: transform .3s;
+  box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}
+
+/* ダークモードON時の見た目 */
+.theme-switch__input:checked + .theme-switch__label {
+  background-color: #272727;
+}
+
+.theme-switch__input:checked + .theme-switch__label span::after {
+  transform: translateX(30px);
+}
+
+
+/*ダークモードのとき*/
+body.dark-mode {
+  background-color: #121212;
+  color: #eee;
+}
+
+/* ヘッダー */
+body.dark-mode .timetable-header {
+  background-color: #3A3D41;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+}
+
+/* ログインラベル（教員 / 生徒） */
+body.dark-mode .login-role-label.teacher {
+  background-color: #3554c7; /* 少し暗めの青 */
+}
+
+body.dark-mode .login-role-label.student {
+  background-color: #2ca3c7; /* 暗めのライトブルー */
+}
+
+/* 学年切り替え */
+body.dark-mode .grade-switch a {
+  color: #aaa;
+}
+
+body.dark-mode .grade-switch a.active {
+  color: #4A69E5;
+}
+
+body.dark-mode .grade-underline {
+  background-color: #4A69E5;
+}
+
+/* スケジュール枠 */
+body.dark-mode .schedule {
+  background-color: #3A3D41;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+}
+
+/* テーブル */
+body.dark-mode .timetable th {
+  background-color: #2a2a2a;
+  color: #ddd;
+}
+
+body.dark-mode .timetable td {
+  background-color: #ffffff;
+  color: #000000;
+  border-color: #828282;
+}
+
+body.dark-mode .timetable th,
+body.dark-mode .timetable td {
+  border: 1px solid #828282;
+}
+
+/* 週切替 */
+body.dark-mode .controls a,
+body.dark-mode .controls .current-week {
+  color: #86a1ff; /* アクセントブルーのダーク版 */
+}
+
+/* フッター */
+body.dark-mode .timetable-footer {
+  background-color: #3A3D41;
+  box-shadow: 0 -4px 12px rgba(0,0,0,0.5);
+}
+
+/* 編集ボタン */
+body.dark-mode .footer-edit-btn {
+  color: #86a1ff;
+  border-color: #86a1ff;
+}
+
+/* フッター中央テキスト */
+body.dark-mode .footer-center {
+  color: #aaa;
+}
+
+/* スイッチラベル */
+body.dark-mode .theme-label {
+  color: #ccc;
+}
+
+/* トグルスイッチ */
+body.dark-mode .theme-switch__label {
+  background-color: #555;
+}
+
+body.dark-mode .theme-switch__label span::after {
+  background-color: #eee;
+}
