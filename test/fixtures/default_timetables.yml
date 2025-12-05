@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  grade: 1
+  semester: 1
+  day_of_week: 1
+  period: 1
+  subject: one
+
+two:
+  grade: 1
+  semester: 1
+  day_of_week: 1
+  period: 1
+  subject: two

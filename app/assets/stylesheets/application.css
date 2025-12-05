@@ -148,3 +148,43 @@
   height: 20px;
   cursor: pointer;
 }
+
+.footer-default-btn {
+  margin-left: 10px;
+  padding: 8px 16px;
+  background-color: #4CAF50;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+}
+
+.footer-default-btn:hover {
+  background-color: #45a049;
+}
+
+.semester-tabs {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.semester-tab {
+  padding: 10px 20px;
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.semester-tab.active {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.semester-tab:hover {
+  background-color: #e0e0e0;
+}
+
+.semester-tab.active:hover {
+  background-color: #45a049;
+}
