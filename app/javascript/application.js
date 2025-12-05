@@ -181,10 +181,11 @@ document.addEventListener('turbo:load', function() {
       .then(response => response.json())
       .then(data => {
         if (data.success) {
+          // モーダル内のセルを更新
           cellElement.textContent = data.subject_name;
+          
+          // 科目選択モーダルだけを閉じる（編集モーダルは開いたまま）
           subjectModal.style.display = 'none';
-          // ページをリロードして変更を反映
-          location.reload();
         }
       })
       .catch(error => {
@@ -316,15 +317,31 @@ document.addEventListener('turbo:load', function() {
     // モーダルを閉じる
     closeButtons.forEach(btn => {
       btn.addEventListener('click', function() {
+        // デフォルト時間割編集モーダルが開いているか確認
+        const isDefaultModal = document.querySelector('.semester-tabs') !== null;
+        
         editModal.style.display = 'none';
         subjectModal.style.display = 'none';
+        
+        // デフォルト時間割編集モーダルを閉じたらリロード
+        if (isDefaultModal) {
+          location.reload();
+        }
       });
     });
   
     // モーダル外クリックで閉じる
     window.addEventListener('click', function(e) {
       if (e.target === editModal) {
+        // デフォルト時間割編集モーダルが開いているか確認
+        const isDefaultModal = document.querySelector('.semester-tabs') !== null;
+        
         editModal.style.display = 'none';
+        
+        // デフォルト時間割編集モーダルを閉じたらリロード
+        if (isDefaultModal) {
+          location.reload();
+        }
       }
       if (e.target === subjectModal) {
         subjectModal.style.display = 'none';
