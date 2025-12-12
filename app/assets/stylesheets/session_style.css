@@ -24,7 +24,7 @@
 /* タイトル */
 .login-title {
   margin-bottom: 1.2rem;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   font-weight: bold;
   color: #3a3a3a;
 }
@@ -37,10 +37,10 @@
   margin-bottom: 0.3rem;
 }
 
-.form-icon {
-  width: 2.5rem;
-  height: 2.5rem;
-  vertical-align: middle;
+/* Material Symbols アイコン */
+.material-symbols-outlined.form-icon {
+  font-size: 2.2rem; /* 大きめ */
+  color: #555;
 }
 
 /* フラッシュメッセージ */
@@ -57,7 +57,7 @@
 
 .form-label {
   margin-top: 0.2rem;
-  font-size: 1rem;
+  font-size: 1.2rem;
   display: block;
   font-weight: bold;
   color: #3a3a3a;
@@ -78,7 +78,7 @@
 }
 
 .password-wrapper .form-input {
-  padding-right: 2.8rem; /* アイコン分の余白 */
+  padding-right: 3rem; /* アイコン分の余白 */
 }
 
 .toggle-password {
@@ -86,11 +86,12 @@
   right: 0.5rem;
   top: 50%;
   transform: translateY(-50%);
-  width: 1.8rem;
-  height: 1.8rem;
+  font-size: 2rem !important; /* 大きめ */
   cursor: pointer;
   opacity: 0.7;
   transition: opacity 0.2s ease;
+  outline: none;           /* 青マーカーを消す */
+  user-select: none;       /* 選択不可 */
 }
 
 .toggle-password:hover {
@@ -102,7 +103,7 @@
 .guest-button {
   width: 100%;
   padding: 0.8rem;
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: bold;
   border: none;
   border-radius: 6px;
@@ -138,4 +139,12 @@
   color: #777;
   font-size: 0.875rem;
   line-height: 1;
+}
+
+/* レスポンシブ対応（スマホ用） */
+@media (max-width: 600px) {
+  .material-symbols-outlined.form-icon,
+  .toggle-password {
+    font-size: 2.6rem;
+  }
 }
