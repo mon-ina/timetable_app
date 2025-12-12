@@ -149,8 +149,8 @@
   cursor: pointer;
 }
 
+/* デフォルトボタン */
 .footer-default-btn {
-  margin-left: 10px;
   padding: 8px 16px;
   background-color: #4CAF50;
   color: white;
