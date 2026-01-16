@@ -5,27 +5,26 @@
       <div class="header-top">
         <h2>時間割</h2>
 
-        <!-- ログイン状態の表示 -->
-        <div class="login-role-label <%= session[:role] %>">
-          
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <!-- メッセージアイコン -->
+          <div class="message-icon-container" id="message-icon">
+            <svg class="message-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+            </svg>
+            <span class="unread-badge" id="unread-badge" style="display: none;">0</span>
+          </div>
 
-          <% if session[:role] == "teacher" %>
-            教員としてログイン中
-          <% else %>
-            生徒としてログイン中
-          <% end %>
-          <%= image_tag "icon.svg", class: "login-icon" %>
+          <!-- ログイン状態の表示 -->
+          <div class="login-role-label <%= session[:role] %>">
+            <% if session[:role] == "teacher" %>
+              教員としてログイン中
+            <% else %>
+              生徒としてログイン中
+            <% end %>
+            <%= image_tag "icon.svg", class: "login-icon" %>
+          </div>
         </div>
-
-
       </div>
-
-<%
-=begin%>
-  @week_offset をコントローラーから渡して、リンクの進行方向を制限
-disabled オプションを付けるとクリック不可になります 
-<%
-=end%>
 
       <div class="grade-switch">
         <%= link_to "1年", timetables_path(week_offset: params[:week_offset], grade: 1), class: (@grade == 1 ? "active" : "") %>
@@ -37,15 +36,12 @@ disabled オプションを付けるとクリック不可になります
 
     <div class="schedule">
       <div class="controls">
-
-        <%# --- 左矢印（先週のときは中身を空にして幅だけ確保） --- %>
         <span class="arrow left">
           <% if @week_offset > -1 %>
             <%= link_to "＜", timetables_path(week_offset: @week_offset - 1, grade: @grade) %>
           <% end %>
         </span>
 
-        <%# --- 中央のテキスト --- %>
         <% week_label =
             case @week_offset
             when -1 then "先週"
@@ -55,13 +51,11 @@ disabled オプションを付けるとクリック不可になります
         %>
         <span class="current-week"><%= week_label %></span>
 
-        <%# --- 右矢印 --- %>
         <span class="arrow right">
           <% if @week_offset < 1 %>
             <%= link_to "＞", timetables_path(week_offset: @week_offset + 1, grade: @grade) %>
           <% end %>
         </span>
-
       </div>
 
       <table class="timetable">
@@ -99,7 +93,6 @@ disabled オプションを付けるとクリック不可になります
       </table>
     </div>
 
-    <%# --- フッター --- %>
     <footer class="timetable-footer">
       <div class="footer-left">
         <% if session[:role] == "teacher" %>
@@ -122,7 +115,7 @@ disabled オプションを付けるとクリック不可になります
       </div>
     </footer>
 
-</div>
+  </div>
 
   <!-- 編集用モーダル -->
   <div id="edit-modal" class="modal">
@@ -141,26 +134,75 @@ disabled オプションを付けるとクリック不可になります
     </div>
   </div>
 
+  <!-- お知らせ一覧モーダル -->
+  <div id="announcements-modal" class="modal announcements-modal">
+    <div class="modal-content">
+      <span class="close announcements-close">&times;</span>
+      <div id="announcements-modal-body"></div>
+    </div>
+  </div>
+
+  <!-- お知らせ詳細モーダル -->
+  <div id="announcement-detail-modal" class="modal announcement-detail-modal">
+    <div class="modal-content">
+      <span class="close announcement-detail-close">&times;</span>
+      <div id="announcement-detail-body"></div>
+    </div>
+  </div>
+
+  <!-- お知らせ作成モーダル -->
+  <div id="create-announcement-modal" class="modal create-announcement-modal">
+    <div class="modal-content">
+      <span class="close create-announcement-close">&times;</span>
+      <div id="create-announcement-body">
+        <h2>お知らせを作成</h2>
+        <form id="create-announcement-form">
+          <div class="form-group">
+            <label for="announcement-grade">対象学年</label>
+            <select id="announcement-grade" required>
+              <option value="1">1年生</option>
+              <option value="2">2年生</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="announcement-title">タイトル</label>
+            <input type="text" id="announcement-title" maxlength="100" required>
+          </div>
+          <div class="form-group">
+            <label for="announcement-content">内容</label>
+            <textarea id="announcement-content" maxlength="1000" required></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="cancel-btn" id="cancel-create-btn">キャンセル</button>
+            <button type="submit" class="submit-btn">送信</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
 </body>
+
 <script>
   const applyTheme = (isDark) => {
     const switchInput = document.getElementById("themeSwitch");
     const themeLabel = document.getElementById("themeLabel");
 
-    if (!switchInput || !themeLabel) return; // ページに無い場合は何もしない
+    if (!switchInput || !themeLabel) return;
 
     document.body.classList.toggle("dark-mode", isDark);
     switchInput.checked = isDark;
     themeLabel.textContent = isDark ? "Darkmode" : "Lightmode";
   };
 
-  // ページ読み込み（Turbo対応）
   document.addEventListener("turbo:load", () => {
     const saved = localStorage.getItem("darkMode");
     applyTheme(saved === "1");
+    
+    // 未読件数を取得
+    updateUnreadCount();
   });
 
-  // スイッチ操作
   document.addEventListener("change", (e) => {
     if (e.target.id === "themeSwitch") {
       const isDark = e.target.checked;
@@ -168,7 +210,21 @@ disabled オプションを付けるとクリック不可になります
       localStorage.setItem("darkMode", isDark ? "1" : "0");
     }
   });
+  
+  // 未読件数を更新
+  function updateUnreadCount() {
+    const grade = <%= @grade %>;
+    fetch(`/announcements/unread_count?grade=${grade}`)
+      .then(response => response.json())
+      .then(data => {
+        const badge = document.getElementById('unread-badge');
+        if (data.unread_count > 0) {
+          badge.textContent = data.unread_count;
+          badge.style.display = 'flex';
+        } else {
+          badge.style.display = 'none';
+        }
+      })
+      .catch(error => console.error('Error:', error));
+  }
 </script>
-
-
-

@@ -10,7 +10,27 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_05_015326) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_09_030523) do
+  create_table "announcement_reads", force: :cascade do |t|
+    t.integer "announcement_id", null: false
+    t.string "student_session_id", null: false
+    t.datetime "read_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["announcement_id", "student_session_id"], name: "index_announcement_reads_unique", unique: true
+    t.index ["announcement_id"], name: "index_announcement_reads_on_announcement_id"
+  end
+
+  create_table "announcements", force: :cascade do |t|
+    t.string "title", null: false
+    t.text "content", null: false
+    t.integer "grade", null: false
+    t.datetime "published_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["grade", "published_at"], name: "index_announcements_on_grade_and_published_at"
+  end
+
   create_table "default_timetables", force: :cascade do |t|
     t.integer "grade"
     t.integer "semester"
@@ -49,6 +69,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_05_015326) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "announcement_reads", "announcements"
   add_foreign_key "default_timetables", "subjects"
   add_foreign_key "timetables", "subjects"
 end

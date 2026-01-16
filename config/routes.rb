@@ -1,4 +1,3 @@
-# config/routes.rb
 Rails.application.routes.draw do
   # ログイン関連
   get "login", to: "sessions#new"
@@ -24,6 +23,16 @@ Rails.application.routes.draw do
   resources :default_timetables, only: [] do
     member do
       patch :update_subject  # デフォルト時間割の科目更新
+    end
+  end
+  
+  # お知らせ
+  resources :announcements, only: [:index, :create] do
+    collection do
+      get :unread_count
+    end
+    member do
+      post :mark_as_read
     end
   end
 end

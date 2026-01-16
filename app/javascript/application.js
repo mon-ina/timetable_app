@@ -348,3 +348,270 @@ document.addEventListener('turbo:load', function() {
       }
     });
   });
+
+  document.addEventListener('turbo:load', function() {
+  const messageIcon = document.getElementById('message-icon');
+  const announcementsModal = document.getElementById('announcements-modal');
+  const announcementDetailModal = document.getElementById('announcement-detail-modal');
+  const createAnnouncementModal = document.getElementById('create-announcement-modal');
+  
+  const announcementsClose = document.querySelector('.announcements-close');
+  const announcementDetailClose = document.querySelector('.announcement-detail-close');
+  const createAnnouncementClose = document.querySelector('.create-announcement-close');
+  
+  const currentGrade = parseInt(document.querySelector('.grade-switch a.active')?.textContent) || 1;
+  const isTeacher = document.querySelector('.login-role-label.teacher') !== null;
+  
+  // メッセージアイコンクリック
+  if (messageIcon) {
+    messageIcon.addEventListener('click', function() {
+      loadAnnouncements();
+    });
+  }
+  
+  // お知らせ一覧を読み込む
+  function loadAnnouncements() {
+    fetch(`/announcements?grade=${currentGrade}`)
+      .then(response => response.json())
+      .then(data => {
+        displayAnnouncementsList(data.announcements);
+        announcementsModal.style.display = 'block';
+      })
+      .catch(error => {
+        console.error('Error loading announcements:', error);
+      });
+  }
+  
+  // お知らせ一覧を表示
+  function displayAnnouncementsList(announcements) {
+    let html = '<h2>お知らせ</h2>';
+    
+    // 教員の場合は新規作成ボタンを表示
+    if (isTeacher) {
+      html += '<button class="create-announcement-btn" id="show-create-form-btn">新しいお知らせを作成</button>';
+    }
+    
+    if (announcements.length === 0) {
+      html += '<div class="empty-announcements">お知らせはありません</div>';
+    } else {
+      html += '<div class="announcement-list">';
+      announcements.forEach(announcement => {
+        const unreadClass = !announcement.is_read ? 'unread' : '';
+        const unreadIndicator = !announcement.is_read ? '<span class="unread-indicator"></span>' : '';
+        
+        html += `
+          <div class="announcement-item ${unreadClass}" data-id="${announcement.id}">
+            <div class="announcement-item-content">
+              <div class="announcement-title">${escapeHtml(announcement.title)}</div>
+              <div class="announcement-date">${announcement.published_at}</div>
+            </div>
+            ${unreadIndicator}
+          </div>
+        `;
+      });
+      html += '</div>';
+    }
+    
+    document.getElementById('announcements-modal-body').innerHTML = html;
+    
+    // お知らせアイテムのクリックイベント
+    document.querySelectorAll('.announcement-item').forEach(item => {
+      item.addEventListener('click', function() {
+        const announcementId = this.dataset.id;
+        const announcement = announcements.find(a => a.id == announcementId);
+        showAnnouncementDetail(announcement);
+      });
+    });
+    
+    // 新規作成ボタンのクリックイベント
+    const showCreateBtn = document.getElementById('show-create-form-btn');
+    if (showCreateBtn) {
+      showCreateBtn.addEventListener('click', function() {
+        announcementsModal.style.display = 'none';
+        createAnnouncementModal.style.display = 'block';
+        
+        // フォームの学年をセット
+        document.getElementById('announcement-grade').value = currentGrade;
+      });
+    }
+  }
+  
+  // お知らせ詳細を表示
+  function showAnnouncementDetail(announcement) {
+    const html = `
+      <div class="announcement-detail-header">
+        <h2 class="announcement-detail-title">${escapeHtml(announcement.title)}</h2>
+        <div class="announcement-detail-date">${announcement.published_at}</div>
+      </div>
+      <div class="announcement-detail-content">${escapeHtml(announcement.content)}</div>
+      <button class="back-to-list-btn" id="back-to-list-btn">一覧に戻る</button>
+    `;
+    
+    document.getElementById('announcement-detail-body').innerHTML = html;
+    
+    // 既読にする
+    if (!announcement.is_read && !isTeacher) {
+      markAsRead(announcement.id);
+    }
+    
+    // モーダル切り替え
+    announcementsModal.style.display = 'none';
+    announcementDetailModal.style.display = 'block';
+    
+    // 戻るボタン
+    document.getElementById('back-to-list-btn').addEventListener('click', function() {
+      // 先に一覧を読み込んでから切り替え
+      fetch(`/announcements?grade=${currentGrade}`)
+        .then(response => response.json())
+        .then(data => {
+          displayAnnouncementsList(data.announcements);
+          announcementDetailModal.style.display = 'none';
+          announcementsModal.style.display = 'block';
+        })
+        .catch(error => {
+          console.error('Error loading announcements:', error);
+          announcementDetailModal.style.display = 'none';
+          announcementsModal.style.display = 'block';
+        });
+    });
+  }
+  
+  // 既読にする
+  function markAsRead(announcementId) {
+    fetch(`/announcements/${announcementId}/mark_as_read`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        updateUnreadCount();
+      }
+    })
+    .catch(error => {
+      console.error('Error marking as read:', error);
+    });
+  }
+  
+  // お知らせ作成フォーム送信
+  const createForm = document.getElementById('create-announcement-form');
+  if (createForm) {
+    createForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const formData = {
+        announcement: {
+          grade: document.getElementById('announcement-grade').value,
+          title: document.getElementById('announcement-title').value,
+          content: document.getElementById('announcement-content').value
+        }
+      };
+      
+      fetch('/announcements', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
+        },
+        body: JSON.stringify(formData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          
+          // フォームをリセット
+          createForm.reset();
+          
+          // 先に一覧を読み込んでから切り替え
+          fetch(`/announcements?grade=${currentGrade}`)
+            .then(response => response.json())
+            .then(data => {
+              displayAnnouncementsList(data.announcements);
+              createAnnouncementModal.style.display = 'none';
+              announcementsModal.style.display = 'block';
+            })
+            .catch(error => {
+              console.error('Error loading announcements:', error);
+              createAnnouncementModal.style.display = 'none';
+            });
+        } else {
+          alert('エラー: ' + data.errors.join(', '));
+        }
+      })
+      .catch(error => {
+        console.error('Error creating announcement:', error);
+        alert('お知らせの作成に失敗しました');
+      });
+    });
+  }
+  
+  // キャンセルボタン
+  const cancelCreateBtn = document.getElementById('cancel-create-btn');
+  if (cancelCreateBtn) {
+    cancelCreateBtn.addEventListener('click', function() {
+      createAnnouncementModal.style.display = 'none';
+      document.getElementById('create-announcement-form').reset();
+    });
+  }
+  
+  // モーダルを閉じる
+  if (announcementsClose) {
+    announcementsClose.addEventListener('click', function() {
+      announcementsModal.style.display = 'none';
+    });
+  }
+  
+  if (announcementDetailClose) {
+    announcementDetailClose.addEventListener('click', function() {
+      announcementDetailModal.style.display = 'none';
+    });
+  }
+  
+  if (createAnnouncementClose) {
+    createAnnouncementClose.addEventListener('click', function() {
+      createAnnouncementModal.style.display = 'none';
+      document.getElementById('create-announcement-form').reset();
+    });
+  }
+  
+  // モーダル外クリックで閉じる
+  window.addEventListener('click', function(e) {
+    if (e.target === announcementsModal) {
+      announcementsModal.style.display = 'none';
+    }
+    if (e.target === announcementDetailModal) {
+      announcementDetailModal.style.display = 'none';
+    }
+    if (e.target === createAnnouncementModal) {
+      createAnnouncementModal.style.display = 'none';
+      document.getElementById('create-announcement-form').reset();
+    }
+  });
+  
+  // HTMLエスケープ
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+  
+  // 未読件数を更新（グローバル関数として定義）
+  window.updateUnreadCount = function() {
+    const grade = currentGrade;
+    fetch(`/announcements/unread_count?grade=${grade}`)
+      .then(response => response.json())
+      .then(data => {
+        const badge = document.getElementById('unread-badge');
+        if (data.unread_count > 0) {
+          badge.textContent = data.unread_count;
+          badge.style.display = 'flex';
+        } else {
+          badge.style.display = 'none';
+        }
+      })
+      .catch(error => console.error('Error:', error));
+  };
+});
